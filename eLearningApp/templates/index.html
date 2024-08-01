@@ -1,6 +1,14 @@
 {% extends "components/base.html" %}
+{% load bootstrap5 %}
 
 {% block content %}
-<h2>Content for My App</h2>
-<p>Stuff etc etc.</p>
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+    <div class="col-lg-8 p-lg-5 mx-auto my-5">
+        <h1 class="display-4 fw-normal">World's best online courses.</h1>
+        <p class="lead fw-normal">Students and teachers love using Coursify to collaborate.</p>
+        <a class="btn btn-outline-secondary" href="/enrol">Enrol Now!</a>
+    </div>
+    <div class="product-device shadow-sm d-none d-md-block"></div>
+    <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
+</div>
 {% endblock content %}

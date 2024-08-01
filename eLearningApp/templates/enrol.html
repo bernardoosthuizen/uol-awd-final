@@ -1,0 +1,27 @@
+{% extends "components/base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="d-flex w-100 justify-content-center align-items-center">
+    <form class="w-50">
+        <h1 class="h3 mb-3 fw-normal my-md-3">Enrol here:</h1>
+        <div class="form-floating my-md-3">
+            <input type="fname" class="form-control" id="floatingInput" placeholder="John">
+            <label for="floatingInput">First Name</label>
+        </div>
+        <div class="form-floating my-md-3">
+            <input type="lname" class="form-control" id="floatingInput" placeholder="Doe">
+            <label for="floatingInput">Surname</label>
+        </div>
+        <div class="form-floating my-md-3">
+            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating my-md-3">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary my-md-3" type="submit">Sign Me Up!</button>
+    </form>
+</div>
+{% endblock content %}
