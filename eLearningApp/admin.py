@@ -24,6 +24,9 @@ class CourseEnrollmentAdmin(admin.ModelAdmin):
 class CourseMaterialAdmin(admin.ModelAdmin):
     model = CourseMaterial
     
+class CourseAssignmentAdmin(admin.ModelAdmin):
+    model = CourseAssignment
+    
     
     
     
@@ -35,4 +38,5 @@ admin.site.register(CourseFeedback, CourseFeedbackAdmin)
 admin.site.register(StudentStatusUpdate, StudentStatusUpdateAdmin)
 admin.site.register(CourseEnrollment, CourseEnrollmentAdmin)
 admin.site.register(CourseMaterial, CourseMaterialAdmin)
+admin.site.register(CourseAssignment, CourseAssignmentAdmin)
 

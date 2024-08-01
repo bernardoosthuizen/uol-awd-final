@@ -3,23 +3,64 @@
 
 {% block content %}
 <div class="d-flex w-100 justify-content-center align-items-center">
-    <form class="w-50">
+    
+    <form class="w-50" id="user_form" action="/enrol/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <h1 class="h3 mb-3 fw-normal my-md-3">Enrol here:</h1>
+        <!-- Error message container -->
+        <div id="error">
+            {% if request.method == "POST" and user_form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in user_form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ field }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for field, errors in profile_form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ field }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        <div id="error-message" style="color: red; display: none;"></div>
+        <!-- --- -->
         <div class="form-floating my-md-3">
-            <input type="fname" class="form-control" id="floatingInput" placeholder="John">
-            <label for="floatingInput">First Name</label>
+            <input name="{{ user_form.first_name.name }}" type="text" class="form-control" id="floatingInput"
+                placeholder="{{user_form.first_name.field.widget.attrs.placeholder}}" required>
+            <label for="floatingInput">{{ user_form.first_name.label_tag }}</label>
         </div>
         <div class="form-floating my-md-3">
-            <input type="lname" class="form-control" id="floatingInput" placeholder="Doe">
-            <label for="floatingInput">Surname</label>
+            <input name="{{ user_form.last_name.name }}" type="text" class="form-control" id="floatingInput"
+                placeholder="{{user_form.last_name.field.widget.attrs.placeholder}}" required>
+            <label for="floatingInput">{{ user_form.last_name.label_tag }}</label>
         </div>
         <div class="form-floating my-md-3">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
+            <input name="{{ user_form.email.name }}" type="email" class="form-control" id="floatingInput"
+                placeholder="{{user_form.email.field.widget.attrs.placeholder}}" required>
+            <label for="floatingInput">{{ user_form.email.label_tag }}</label>
         </div>
         <div class="form-floating my-md-3">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
+            <input name="{{ user_form.password1.name }}" type="password" class="form-control" id="floatingPassword"
+                placeholder="{{user_form.password1.field.widget.attrs.placeholder}}" required>
+            <label for="floatingInput">Password:</label>
+        </div>
+        <div class="form-floating my-md-3">
+            <input name="{{ user_form.password2.name }}" type="password" class="form-control" id="floatingPassword"
+                placeholder="{{user_form.password2.field.widget.attrs.placeholder}}" required>
+            <label for="floatingInput">Confirm Password:</label>
+        </div>
+        <div class="form-floating my-md-3">
+            <select name="institution" class="form-select" id="floatingSelect" aria-label="Floating label select example" required>
+                <option selected>Select...</option>
+                {% for institution in institutions %}
+                    <option value="{{ institution.id }}">{{ institution.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="floatingSelect">{{ profile_form.institution.label_tag }}</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary my-md-3" type="submit">Sign Me Up!</button>
     </form>

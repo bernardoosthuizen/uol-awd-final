@@ -24,10 +24,7 @@ class Course(models.Model):
 # Extend the User model
 class AppUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    fname = models.CharField(max_length=100)
-    lname = models.CharField(max_length=100)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
@@ -89,3 +86,20 @@ class CourseMaterial(models.Model):
     
     def __str__(self):
         return self.title
+    
+# Course assignment model
+class CourseAssignment(models.Model):
+    id = models.AutoField(primary_key=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    deadline = models.DateField()
+    
+    def __str__(self):
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        # Check if deadline is in the future
+        if self.deadline < datetime.date.today():
+            raise ValidationError("Deadline must be in the future.")
+        super().save(*args, **kwargs)
