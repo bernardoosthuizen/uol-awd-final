@@ -25,3 +25,23 @@ def enrol(request):
         "pageTitle": "Enrol",
     }
     return render(request, "enrol.html", context)
+
+def dashboard(request):
+    context = {
+        "pageTitle": "Dashboard",
+    }
+    return render(request, "dashboard.html", context)
+
+def courses(request):
+    context = {
+        "pageTitle": "Courses",
+    }
+    return render(request, "courses.html", context)
+
+def profile(request):
+    context = {
+        "pageTitle": "Profile",
+    }
+    return render(request, "profile.html", context)
+
+

@@ -1,0 +1,32 @@
+{% extends "components/base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="d-flex flex-grow-1">
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: fit-content;">
+        <span class="fs-5">Menu</span>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li>
+            <a href="/dashboard" class="nav-link link-dark">
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="/courses" class="nav-link link-dark">
+                Courses
+            </a>
+        </li>
+        <li>
+            <a href="/profile" class="nav-link link-dark">
+                My Profile
+            </a>
+        </li>
+    </ul>
+</div>
+<!-- Main Content -->
+<div class="flex-grow-1 p-3" style="background-color: aqua;">
+    {% block main_content %}{% endblock %}
+</div>
+</div>
+{% endblock content %}

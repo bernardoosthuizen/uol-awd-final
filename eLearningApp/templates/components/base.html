@@ -10,10 +10,10 @@
     {% bootstrap_javascript %}
 </head>
 
-<body style="margin: 0; padding: 0;">
-    <div class="container-fluid">
+<body style="margin: 0; padding: 0;" class="d-flex flex-column min-vh-100">
+    <div class="container-fluid flex-grow-1 d-flex flex-column">
         {% include 'components/navigation.html' %}
-        <div class="d-flex flex-column container-lg px-2 py-5">
+        <div class="d-flex flex-column container-lg px-2 flex-grow-1">
         {% block content %} {% endblock %}
         </div>
     </div>
