@@ -27,6 +27,7 @@ class AppUser(models.Model):
     fname = models.CharField(max_length=100)
     lname = models.CharField(max_length=100)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username

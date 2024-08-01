@@ -9,5 +9,6 @@ urlpatterns = [
     path("enrol/", views.enrol, name="enrol"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("courses/", views.courses, name="courses"),
-    path("profile/", views.profile, name="profile"),
+    path("profile/<int:user_id>", views.profile, name="profile"),
+    path("courses/details/<int:course_id>", views.courseDetails, name="courseDetails"),
 ]

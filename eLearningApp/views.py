@@ -38,10 +38,16 @@ def courses(request):
     }
     return render(request, "courses.html", context)
 
-def profile(request):
+def profile(request, user_id):
     context = {
+        "user_id": user_id,
         "pageTitle": "Profile",
     }
     return render(request, "profile.html", context)
 
-
+def courseDetails(request, course_id):
+    context = {
+        "course_id": course_id,
+        "pageTitle": "Course Details: " + str(id),
+    }
+    return render(request, "course-details.html", context)
