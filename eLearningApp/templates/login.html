@@ -3,14 +3,25 @@
 
 {% block content %}
 <div class="d-flex w-100 justify-content-center align-items-center">
-    <form class="w-50">
+    <form class="w-50" id="user_form" action="/login/" method="post">
+        {% csrf_token %}
+        <!-- Error message container -->
+        <div id="error">
+            {% if request.method == "POST" and error %}
+            <div class="alert alert-danger">
+                <ul>
+                    <li>{{ error }}</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
         <h1 class="h3 mb-3 fw-normal my-md-3">Please sign in</h1>
         <div class="form-floating my-md-3">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+            <input name="username" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
             <label for="floatingInput">Email address</label>
         </div>
         <div class="form-floating my-md-3">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
             <label for="floatingPassword">Password</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary my-md-3" type="submit">Sign in</button>

@@ -4,9 +4,10 @@
 {% block main_content %}
 <div class="container py-4">
    <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-cente">
-      <span class="fs-4">My Dashboard</span>
+      <span class="fs-4">Welcome {{ user.first_name }}</span>
       <div>
-         <a href="#" class="btn btn-secondary btn-sm">Update Status</a>
+         <!-- Button trigger modal -->
+         <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Update Status</button>
       </div>
    </header>
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
@@ -14,11 +15,13 @@
          <h2 class="display-7">Deadlines</h2>
       </div>
    </div>
+   {% if user_group.name == "Student" %}
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
          <h2 class="display-9">Status Updates</h2>
       </div>
    </div>
+   {% endif %}
    <div class="row align-items-md-stretch">
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">
@@ -40,4 +43,33 @@
       </div>
    </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New Status Update</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="statur_update" action="">
+         <div class="modal-body">
+            <textarea rows="2" maxlength="500" class="w-100" ></textarea>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Update</button>
+         </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+<script>
+   var myModal = document.getElementById('myModal')
+   var myInput = document.getElementById('myInput')
+
+   myModal.addEventListener('shown.bs.modal', function () {
+      myInput.focus()
+   })
+</script>
 {% endblock main_content %}

@@ -1,7 +1,9 @@
 # Import necessary modules
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
 
@@ -19,6 +21,23 @@ def features(request):
     return render(request, "features.html", context)
 
 def login(request):
+    
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        authenticated_user = authenticate(username=username, password=password)
+        
+        if authenticated_user is not None:
+            if authenticated_user.is_active:
+                auth_login(request, authenticated_user)
+                return redirect('dashboard')
+            else:
+                return render(request,"login.html", {'error': 'Account is disabled.'})
+        else:
+            return render(request,"login.html", {'error': 'Invalid login credentials.'})
+        
+        
     context = {
         "pageTitle": "Login",
     }
@@ -39,7 +58,7 @@ def enrol(request):
         if user_form.is_valid() and profile_form.is_valid():
             # Check if passwords match
             if user_form.cleaned_data['password1'] != user_form.cleaned_data['password2']:
-                user_form.add_error('password1', "Passwords do not match.")
+                user_form.add_error(None, "Passwords do not match.")
                 return render(request, "enrol.html", {"user_form": user_form, "profile_form": profile_form, "institutions": institution_list})
             # Save the user
             user = user_form.save(commit=False)
@@ -56,9 +75,23 @@ def enrol(request):
             profile.institution = Institution.objects.get(id=institution_id)
             profile.save()
             
+            # Log the user in
+            authenticated_user = authenticate(username=user.username, password=user_form.cleaned_data['password1'])
+            
+            if authenticated_user is not None:
+                if authenticated_user.is_active:
+                    auth_login(request, authenticated_user)
+                    return redirect('dashboard')
+                else:
+                    user_form.add_error(None, "Account is disabled.")
+                    return render(request, "enrol.html", {"user_form": user_form, "profile_form": profile_form, "institutions": institution_list})
+            else: 
+                user_form.add_error(None, "Invalid login.")
+                return render(request, "enrol.html", {"user_form": user_form, "profile_form": profile_form, "institutions": institution_list})
+            
             enrolled = True
             
-            return redirect('dashboard')
+            
     else:
         user_form = UserForm()
         profile_form = AppUserForm()
@@ -73,28 +106,45 @@ def enrol(request):
     }
     return render(request, "enrol.html", context)
 
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('index')
+
+@login_required
 def dashboard(request):
+    user_group = request.user.groups.first()
+     
     context = {
         "pageTitle": "Dashboard",
+        "user_group": user_group,
     }
     return render(request, "dashboard.html", context)
 
+@login_required
 def courses(request):
+    user_group = request.user.groups.first()
+    
     context = {
         "pageTitle": "Courses",
+        "user_group": user_group,
     }
     return render(request, "courses.html", context)
 
-def profile(request, user_id):
+@login_required
+def profile(request):
     context = {
-        "user_id": user_id,
         "pageTitle": "Profile",
     }
     return render(request, "profile.html", context)
 
+@login_required
 def courseDetails(request, course_id):
+    user_group = request.user.groups.first()
+    
     context = {
         "course_id": course_id,
         "pageTitle": "Course Details: " + str(id),
+        "user_group": user_group
     }
     return render(request, "course-details.html", context)

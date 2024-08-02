@@ -14,19 +14,18 @@
                 <ul>
                     {% for field, errors in user_form.errors.items %}
                     {% for error in errors %}
-                    <li>{{ field }}: {{ error }}</li>
+                    <li>{{ error }}</li>
                     {% endfor %}
                     {% endfor %}
                     {% for field, errors in profile_form.errors.items %}
                     {% for error in errors %}
-                    <li>{{ field }}: {{ error }}</li>
+                    <li>{{ error }}</li>
                     {% endfor %}
                     {% endfor %}
                 </ul>
             </div>
             {% endif %}
         </div>
-        <div id="error-message" style="color: red; display: none;"></div>
         <!-- --- -->
         <div class="form-floating my-md-3">
             <input name="{{ user_form.first_name.name }}" type="text" class="form-control" id="floatingInput"
