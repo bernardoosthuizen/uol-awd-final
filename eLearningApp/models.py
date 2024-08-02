@@ -113,9 +113,17 @@ class CourseAssignment(models.Model):
 # Nofiication model
 class Notification(models.Model):
     id = models.AutoField(primary_key=True)
-    receiving_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    receiving_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    for_course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
     message = models.TextField()
     date = models.DateField(auto_now_add=True)
     
     def __str__(self):
         return self.message
+    
+    def save(self, *args, **kwargs):
+        if self.receiving_user is not None and self.for_course is not None:
+            raise ValidationError("Notification must be for a user or a course, not both.")
+        if self.receiving_user is None and self.for_course is None:
+            raise ValidationError("Notification must be for a user or a course.")
+        super().save(*args, **kwargs)

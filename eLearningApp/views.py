@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 import datetime
 from .models import *
 from .forms import *
@@ -125,7 +126,7 @@ def dashboard(request):
     course_deadlines = CourseAssignment.objects.filter(course__in=enrolled_courses).order_by('deadline')
     
     # get notifications
-    user_notifications = Notification.objects.filter(receiving_user=request.user)
+    user_notifications = Notification.objects.filter( Q(receiving_user=request.user) | Q(for_course__in=enrolled_courses)).order_by('date')[:10]
     
     context = {
         "pageTitle": "Dashboard",
@@ -267,6 +268,9 @@ def create_assignment(request, course_id):
 @login_required
 def join_course(request, course_id):
     course = Course.objects.get(id=course_id)
+    # Add enrollment
     CourseEnrollment.objects.create(user=request.user, course=course)
+    # Add notification
+    Notification.objects.create(receiving_user=course.lecturer, message=request.user.first_name + " " + request.user.last_name + " has enrolled in " + course.name)
     
     return redirect('courses')

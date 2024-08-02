@@ -25,9 +25,9 @@
       <div class="container-fluid py-2">
          <h2 class="display-7">Notifications</h2>
          <ul class="list-group list-group-flush">
-            <!-- {% for course in course_deadlines %}
-            <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
-            {% endfor %} -->
+            {% for notification in user_notifications %}
+            <li class="list-group-item">{{notification}} - {{notification.date}}</li>
+            {% endfor %}
          </ul>
       </div>
    </div>
