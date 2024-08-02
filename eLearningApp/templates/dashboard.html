@@ -3,7 +3,7 @@
 
 {% block main_content %}
 <div class="container py-4">
-   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-cente">
+   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
       <span class="fs-4">Welcome {{ user.first_name }}</span>
       <div>
          <!-- Button trigger modal -->
@@ -13,12 +13,37 @@
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
          <h2 class="display-7">Deadlines</h2>
+         <ul class="list-group list-group-flush">
+            {% for course in course_deadlines %}
+            <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
+            {% endfor %}
+         </ul>
       </div>
    </div>
+   {% if user_notifications %}
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Notifications</h2>
+         <ul class="list-group list-group-flush">
+            <!-- {% for course in course_deadlines %}
+            <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
+            {% endfor %} -->
+         </ul>
+      </div>
+   </div>
+   {% endif %}
    {% if user_group.name == "Student" %}
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
          <h2 class="display-9">Status Updates</h2>
+         {% for status in status_updates %}
+         <div class="card mb-3">
+            <div class="card-body">
+               <p class="card-text lead">{{ status.status }}</p>
+               <p class="card-text"><small class="text-muted">{{ status.date }}</small></p>
+            </div>
+         </div>
+         {% endfor %}
       </div>
    </div>
    {% endif %}
@@ -26,11 +51,16 @@
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">
             <h2>My Courses</h2>
-            <p>Or, keep it light and add a border for some added definition to the boundaries of your content. Be sure
-               to look under the hood at the source HTML here as we've adjusted the alignment and sizing of both
-               column's content for equal-height.</p>
-            <a href="/courses"><button class="btn btn-outline-secondary" type="button">View All</button></a>
+            <div class="list-group" style="height: 80%;">
+               {% for course in enrolled_courses %}
+               <a href="/courses/details/{{course.id}}" class="list-group-item list-group-item-action" aria-current="true">
+                  {{ course }}
+               </a>
+               {% endfor %}
+            </div>
+            <a href="/courses"><button class="btn btn-outline-secondary"    type="button">View All</button></a>
          </div>
+         
       </div>
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">
@@ -51,9 +81,10 @@
             <h5 class="modal-title" id="exampleModalLabel">New Status Update</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <form id="statur_update" action="">
+         <form id="statur_update" action="/update_status/" method="post">
+         {% csrf_token %}
          <div class="modal-body">
-            <textarea rows="2" maxlength="500" class="w-100" ></textarea>
+            <textarea name="status_update"rows="2" maxlength="500" class="w-100" ></textarea>
          </div>
          <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

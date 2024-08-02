@@ -3,8 +3,129 @@
 
 {% block main_content %}
 <div class="container py-4">
-   <header class="pb-3 mb-4 border-bottom">
-      <span class="fs-4">Course Title {{course_id}}</span>
+   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
+      <span class="fs-4">{{course}}</span>
+      <div>
+         {% if user_group.name == "Student" %}
+         <!-- Button trigger modal -->
+         <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Give Feedback</button>
+         {% else %}
+         <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#assignmentModal">Add Assignment</button>
+         {% endif %}
+      </div>
    </header>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Deadlines</h2>
+         <ul class="list-group list-group-flush">
+            {% for assignment in course_deadlines %}
+            <li class="list-group-item"><strong>{{assignment.deadline}}</strong> - {{assignment}}</li>
+            {% endfor %}
+         </ul>
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Assignments</h2>
+         <ul class="list-group list-group-flush">
+            {% for assignment in course_deadlines %}
+            <li class="list-group-item">{{assignment}}</li>
+            {% endfor %}
+         </ul>
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Course Material</h2>
+         <ul class="list-group list-group-flush">
+            <!-- {% for assignment in course_deadlines %}
+            <li class="list-group-item"><strong>{{assignment.deadline}}</strong> - {{assignment}}</li>
+            {% endfor %} -->
+         </ul>
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Course Feedback</h2>
+         {% for feedback in course_feedback %}
+         <div class="card mb-3">
+            <div class="card-body">
+               <p class="card-text">{{ feedback.feedback }}</p>
+               <p class="card-text"><small class="text-muted">{{ feedback.date }}</small></p>
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Enrolled Students</h2>
+         <ul class="list-group list-group-flush">
+            {% for student in course_students %}
+            <li class="list-group-item">{{student.first_name}} {{student.last_name}}</li>
+            {% endfor %}
+         </ul>
+      </div>
+   </div>
 </div>
+<!-- Feedback Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Give Feedback</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="statur_update" action="/give_feedback/{{course.id}}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+               <textarea name="feedback" rows="4" maxlength="2000" class="w-100"></textarea>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+<!-- Add Assignment Modal -->
+<div class="modal fade" id="assignmentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New Assignment</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="statur_update" action="/create_assignment/{{course.id}}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+               <div class="form-floating my-md-3">
+                  <input name="title" type="text" class="form-control" id="floatingInput" placeholder="Title" required>
+                  <label for="floatingInput">Title</label>
+               </div>
+               <textarea name="description" rows="3" class="form-control" placeholder="Description" id="floatingTextarea" required></textarea>
+               <div class="form-floating my-md-3">
+                  <input name="due_date" type="date" class="form-control" id="date" placeholder="Due Date" required>
+                  <label for="date">Due Date</label>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+<script>
+   var myModal = document.getElementById('myModal')
+   var myInput = document.getElementById('myInput')
+
+   myModal.addEventListener('shown.bs.modal', function () {
+      myInput.focus()
+   })
+</script>
+
 {% endblock main_content %}

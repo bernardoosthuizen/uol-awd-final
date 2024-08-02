@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
+import datetime
 from .models import *
 from .forms import *
 
@@ -114,20 +115,44 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     user_group = request.user.groups.first()
-     
+    status_updates = StudentStatusUpdate.objects.filter(user=request.user).order_by('date')[:5]
+    
+    # find enrolled courses
+    course_enrollments = CourseEnrollment.objects.filter(user=request.user)
+    enrolled_courses = Course.objects.filter(id__in=course_enrollments.values('course_id'))[:5]
+    
+    # get deadlines
+    course_deadlines = CourseAssignment.objects.filter(course__in=enrolled_courses).order_by('deadline')
+    
+    # get notifications
+    user_notifications = Notification.objects.filter(receiving_user=request.user)
+    
     context = {
         "pageTitle": "Dashboard",
         "user_group": user_group,
+        "status_updates": status_updates,   
+        "enrolled_courses": enrolled_courses,
+        "course_deadlines": course_deadlines,
+        "user_notifications": user_notifications,
     }
+    
     return render(request, "dashboard.html", context)
 
 @login_required
 def courses(request):
     user_group = request.user.groups.first()
+    # find enrolled courses
+    course_enrollments = CourseEnrollment.objects.filter(user=request.user)
+    enrolled_courses = Course.objects.filter(id__in=course_enrollments.values('course_id'))
     
+    all_courses = Course.objects.filter(institution=AppUser.objects.get(user=request.user).institution)
+    
+        
     context = {
         "pageTitle": "Courses",
         "user_group": user_group,
+        "enrolled_courses": enrolled_courses,
+        "all_courses": all_courses, 
     }
     return render(request, "courses.html", context)
 
@@ -142,9 +167,106 @@ def profile(request):
 def courseDetails(request, course_id):
     user_group = request.user.groups.first()
     
+    course = Course.objects.get(id=course_id)
+    
+    course_deadlines = CourseAssignment.objects.filter(course=course)
+    course_materials = CourseMaterial.objects.filter(course=course)
+    course_feedback = CourseFeedback.objects.filter(course=course)
+    enrolled_students = CourseEnrollment.objects.filter(course=course)
+    course_students = User.objects.filter(id__in=enrolled_students.values('user_id'))
+    
+    
+    
     context = {
-        "course_id": course_id,
+        "course": course,
         "pageTitle": "Course Details: " + str(id),
-        "user_group": user_group
+        "user_group": user_group,
+        "course_deadlines": course_deadlines,
+        "course_materials": course_materials,
+        "course_feedback": course_feedback, 
+        "course_students": course_students,
+        
     }
     return render(request, "course-details.html", context)
+
+@login_required
+def update_status(request):
+    if request.method == "POST":
+        # Get new status
+        status = request.POST.get('status_update')
+        
+        # Write status to database
+        user = request.user
+        status_update = StudentStatusUpdate(user=user, status=status)
+        status_update.save()
+        
+        return redirect('dashboard')
+    
+@login_required
+def give_feedback(request, course_id):
+    if request.method == "POST":
+        course = Course.objects.get(id=course_id)
+        feedback = request.POST.get('feedback')
+        
+        course_feedback = CourseFeedback(course=course, user=request.user, feedback=feedback)
+        course_feedback.save()
+        
+        return redirect('courseDetails', course_id)
+
+@login_required
+def create_course(request):
+    if request.method == "POST":
+        # Save course
+        course_name = request.POST.get('name')
+        institution = AppUser.objects.get(user=request.user).institution
+        institution_obj = Institution.objects.get(name=institution)
+        Course.objects.create(name=course_name, lecturer=request.user, institution=institution_obj)
+        
+        # Enroll lecturer in course
+        course = Course.objects.get(name=course_name)
+        CourseEnrollment.objects.create(user=request.user, course=course)
+        
+        return redirect('courses')
+        
+    else:
+        course_form = CourseForm()
+        
+    context = {
+        "pageTitle": "Create Course",
+        "course_form": course_form,
+    }
+    
+    return render(request, "create-course.html", context)
+
+
+@login_required
+def create_assignment(request, course_id):
+    if request.method == "POST":
+        # Save assignment
+        course = Course.objects.get(id=course_id)
+        assignment_name = request.POST.get('title')
+        deadline_str = request.POST.get('due_date')
+        deadline = datetime.datetime.strptime(deadline_str, "%Y-%m-%d").date() # Convert into date object
+        description = request.POST.get('description')
+        
+        CourseAssignment.objects.create(course=course, title=assignment_name, deadline=deadline, description=description)
+        
+        return redirect('courseDetails', course_id)
+        
+    else:
+        course_id = request.GET.get('course_id')
+        course = Course.objects.get(id=course_id)
+        
+        context = {
+            "pageTitle": "Create Assignment",
+            "course": course,
+        }
+        
+        return render(request, "create-assignment.html", context)
+
+@login_required
+def join_course(request, course_id):
+    course = Course.objects.get(id=course_id)
+    CourseEnrollment.objects.create(user=request.user, course=course)
+    
+    return redirect('courses')

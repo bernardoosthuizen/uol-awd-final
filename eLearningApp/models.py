@@ -1,6 +1,8 @@
 # Import necessary modules
 from django.db import models
+import datetime
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Institution model
 class Institution(models.Model):
@@ -33,16 +35,19 @@ class AppUser(models.Model):
 class CourseFeedback(models.Model):
     id = models.AutoField(primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     feedback = models.TextField()
     date = models.DateField(auto_now_add=True)
+    
+    
     
     def __str__(self):
         return self.course.name
     
     def save(self, *args, **kwargs):
+        appUser = AppUser.objects.get(user=self.user)
         # Check if user and course are part of the same institution
-        if self.user.institution != self.course.institution:
+        if appUser.institution != self.course.institution:
             raise ValidationError("User and course must be part of the same institution.")
         
         # Check if user is enrolled in the course
@@ -54,7 +59,7 @@ class CourseFeedback(models.Model):
 # Student status updte model
 class StudentStatusUpdate(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=500)
     date = models.DateField(auto_now_add=True)
     
@@ -64,15 +69,16 @@ class StudentStatusUpdate(models.Model):
 # Course enrollment model
 class CourseEnrollment(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return self.user.user.username
+        return self.course.name
     
     def save(self, *args, **kwargs):
-        if self.user.institution != self.course.institution:
+        appUser = AppUser.objects.get(user=self.user)
+        if appUser.institution != self.course.institution:
             raise ValidationError("User and course must be part of the same institution.")
         super().save(*args, **kwargs)
         
@@ -103,3 +109,13 @@ class CourseAssignment(models.Model):
         if self.deadline < datetime.date.today():
             raise ValidationError("Deadline must be in the future.")
         super().save(*args, **kwargs)
+        
+# Nofiication model
+class Notification(models.Model):
+    id = models.AutoField(primary_key=True)
+    receiving_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    date = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.message

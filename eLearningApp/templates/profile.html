@@ -6,5 +6,13 @@
    <header class="pb-3 mb-4 border-bottom">
       <span class="fs-4">My Profile</span>
    </header>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Details</h2>
+         {{user.first_name}} {{user.last_name}}
+         <br>
+         {{user.email}}
+      </div>
+   </div>
 </div>
 {% endblock main_content %}
