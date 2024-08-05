@@ -13,7 +13,17 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-        
+
+# User serializer
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name']
+    
+    def create(self, validated_data):
+        validated_data.pop('id', None)  # Remove 'id' if present
+        return super().create(validated_data)
+           
 # AppUser serializer
 class AppUserSerializer(serializers.ModelSerializer):
     class Meta:

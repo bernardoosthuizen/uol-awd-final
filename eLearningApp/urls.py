@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import api
 
 urlpatterns = [
     # View URL patterns
@@ -21,5 +22,8 @@ urlpatterns = [
     path("join_course/<int:course_id>", views.join_course, name="join_course"),
     path("delete_profile/", views.delete_profile, name="delete_profile"),
     path("remove_enrolment/<int:course_id>/<int:student_id>", views.remove_enrolment, name="remove_enrolment"),
+    path("api/", views.api, name="api"),
     # API URL patterns
+    path("api/users/", api.users),
+    path("api/user/<int:pk>", api.user),
 ]

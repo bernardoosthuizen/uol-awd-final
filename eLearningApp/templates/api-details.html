@@ -1,0 +1,15 @@
+{% extends "components/base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+<div class="p-2 px-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-2">
+        <h2 class="display-7">API</h2>
+        <ul class="list-group list-group-flush">
+            {% for course in course_deadlines %}
+            <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock content %}

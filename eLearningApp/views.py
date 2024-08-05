@@ -308,3 +308,6 @@ def remove_enrolment(request, course_id, student_id):
         enrollment.delete()
         
         return redirect('courses')
+    
+def api(request):
+    return render(request, "api-details.html")
