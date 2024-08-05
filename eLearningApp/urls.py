@@ -1,4 +1,6 @@
 from django.urls import path, re_path
+from django.views.generic import TemplateView
+from rest_framework.schemas import get_schema_view
 
 from . import views
 from . import api
@@ -22,8 +24,16 @@ urlpatterns = [
     path("join_course/<int:course_id>", views.join_course, name="join_course"),
     path("delete_profile/", views.delete_profile, name="delete_profile"),
     path("remove_enrolment/<int:course_id>/<int:student_id>", views.remove_enrolment, name="remove_enrolment"),
-    path("api/", views.api, name="api"),
+    # Schema urls
+    path("apischema/", get_schema_view(
+        title='Coursify REST API', 
+        description="API for interacting with user records",
+        version='1.0'), name="openapi-schema"),
+    path("api-docs/", TemplateView.as_view(
+        template_name='api-docs.html',
+        extra_context={'schema_url':'openapi-schema'}), name='swagger-ui'),
     # API URL patterns
     path("api/users/", api.users, name='api_users'),
-    re_path(r"^api/user(?:/(?P<pk>\d+))?$", api.user, name='api_user'),
+    path("api/user/<int:user_id>", api.user, name='api_user'),
+    # re_path(r"^api/user(?:/(?P<pk>\d+))?$", api.user, name='api_user'),
 ]

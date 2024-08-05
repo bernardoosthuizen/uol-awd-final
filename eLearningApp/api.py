@@ -2,17 +2,26 @@
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import status
 from .models import *
 from .serializers import *
 
     
 @api_view(['GET', 'POST', 'DELETE'])
+
 def user(request, pk=None):
+    """
+    List all users.
+    ---
+    operationId: manageUsers
+    """
+    
     if request.method == 'GET':
         if pk is not None:
             user_instance = get_object_or_404(User, pk=pk)
@@ -70,6 +79,11 @@ def user(request, pk=None):
     
 @api_view(['GET'])
 def users(request):
+    """
+    List all users.
+    ---
+    operationId: listAllUsers
+    """
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)

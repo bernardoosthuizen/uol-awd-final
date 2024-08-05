@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "bootstrap5",
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '30/min',
         'user': '30/min'
-    }
+    },
 }
 
 WSGI_APPLICATION = "uolAwdFinal.wsgi.application"

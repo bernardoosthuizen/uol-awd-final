@@ -34,7 +34,7 @@ class UserAPITests(APITestCase):
             'institution': 'The Test Uni'
         }
 
-        response = self.client.post(reverse('api_user'), data, format='json')
+        response = self.client.post(reverse('api_user', kwargs={'pk': self.user_id}), data, format='json')
         self.user_id = User.objects.get(username=response.data['email'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
