@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 from . import api
@@ -24,6 +24,6 @@ urlpatterns = [
     path("remove_enrolment/<int:course_id>/<int:student_id>", views.remove_enrolment, name="remove_enrolment"),
     path("api/", views.api, name="api"),
     # API URL patterns
-    path("api/users/", api.users),
-    path("api/user/<int:pk>", api.user),
+    path("api/users/", api.users, name='api_users'),
+    re_path(r"^api/user(?:/(?P<pk>\d+))?$", api.user, name='api_user'),
 ]
