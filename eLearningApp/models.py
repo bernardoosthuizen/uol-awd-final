@@ -1,3 +1,6 @@
+# --- MODELS ---
+# Defining database schemas.
+
 # Import necessary modules
 from django.db import models
 import datetime

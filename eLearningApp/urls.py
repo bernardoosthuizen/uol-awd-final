@@ -1,3 +1,7 @@
+# --- URLS ---
+# Defines URL patterns.
+
+# Importing necessary modules
 from django.urls import path, re_path
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view

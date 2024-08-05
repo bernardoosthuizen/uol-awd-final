@@ -1,3 +1,5 @@
+# --- API Endpoints --
+# These are used to interact with user data.
 # Import necessary modules
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt

@@ -1,3 +1,6 @@
+# --- SERIALIZERS ---
+# This file contains the serializers for the models.
+
 # Import necessary modules
 from rest_framework import serializers
 from .models import *

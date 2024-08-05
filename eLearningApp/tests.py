@@ -1,5 +1,7 @@
-# tests.py
+# --- API Tests ---
+# These are used to test the API endpoints.
 
+# Import necessary modules
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -7,7 +9,7 @@ from django.contrib.auth import get_user_model
 from .models import Institution, User, AppUser
 
 class UserAPITests(APITestCase):
-    
+    # Set up temporary data for testing
     def setUp(self):
         self.institution = Institution.objects.create(name='The Test Uni', location="The World")  # Create the institution
         # Create a user and store the user ID

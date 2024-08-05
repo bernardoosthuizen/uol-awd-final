@@ -1,3 +1,6 @@
+# --- VIEWS ---
+# Backend funstions for each page.
+
 # Import necessary modules
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -23,20 +26,23 @@ def features(request):
     return render(request, "features.html", context)
 
 def login(request):
-    
+    # Chech if its a POST request
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+        # Authenticate user
         authenticated_user = authenticate(username=username, password=password)
         
         if authenticated_user is not None:
+            # If user is authenticated and active log them in
             if authenticated_user.is_active:
                 auth_login(request, authenticated_user)
                 return redirect('dashboard')
             else:
+                # Display error if account is disabled
                 return render(request,"login.html", {'error': 'Account is disabled.'})
         else:
+            # Display error if login credentials are invalid
             return render(request,"login.html", {'error': 'Invalid login credentials.'})
         
         
@@ -53,6 +59,7 @@ def enrol(request):
     enrolled = False
     
     if request.method == "POST":
+        # Get form data
         user_form = UserForm(request.POST)
         profile_form = AppUserForm(request.POST)
         
@@ -116,6 +123,7 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     user_group = request.user.groups.first()
+    # Get status updates of the user
     status_updates = StudentStatusUpdate.objects.filter(user=request.user).order_by('-date')[:5]
     
     # find enrolled courses
@@ -143,7 +151,6 @@ def dashboard(request):
 def courses(request):
     user_group = request.user.groups.first()
     # find enrolled courses
-    
     course_enrollments = CourseEnrollment.objects.filter(user=request.user)
     enrolled_courses = Course.objects.filter(id__in=course_enrollments.values('course_id'))
     
@@ -160,6 +167,7 @@ def courses(request):
 
 @login_required
 def students(request):
+    # Get students only from current institution.
     institution = AppUser.objects.get(user=request.user).institution
     students = AppUser.objects.filter(institution=institution)
     student_details = User.objects.filter(id__in=students.values('user_id'))
@@ -193,9 +201,7 @@ def courseDetails(request, course_id):
     course_feedback = CourseFeedback.objects.filter(course=course)
     enrolled_students = CourseEnrollment.objects.filter(course=course)
     course_students = User.objects.filter(id__in=enrolled_students.values('user_id'))
-    
-    
-    
+
     context = {
         "course": course,
         "pageTitle": "Course Details: " + str(course),
@@ -225,8 +231,9 @@ def update_status(request):
 def give_feedback(request, course_id):
     if request.method == "POST":
         course = Course.objects.get(id=course_id)
+        # Get feedback from form
         feedback = request.POST.get('feedback')
-        
+        # Write feedback to database
         course_feedback = CourseFeedback(course=course, user=request.user, feedback=feedback)
         course_feedback.save()
         
@@ -267,7 +274,6 @@ def create_assignment(request, course_id):
         deadline_str = request.POST.get('due_date')
         deadline = datetime.datetime.strptime(deadline_str, "%Y-%m-%d").date() # Convert into date object
         description = request.POST.get('description')
-        
         CourseAssignment.objects.create(course=course, title=assignment_name, deadline=deadline, description=description)
         
         return redirect('courseDetails', course_id)
@@ -302,9 +308,12 @@ def delete_profile(request):
 @login_required
 def remove_enrolment(request, course_id, student_id):
     if request.method == "POST":
+        # Get student to remove.
         course = Course.objects.get(id=course_id)
         student_user = User.objects.get(id=student_id)
+        # get the relatevent enrollment
         enrollment = CourseEnrollment.objects.get(user=student_user, course=course)
+        # unenroll student
         enrollment.delete()
         
         return redirect('courses')

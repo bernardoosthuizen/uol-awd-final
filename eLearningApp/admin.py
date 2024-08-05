@@ -1,3 +1,5 @@
+# --- ADMIN SITE SETTINGS ---
+# Import required modules
 from django.contrib import admin
 
 # Register your models here.
