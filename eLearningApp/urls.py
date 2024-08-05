@@ -10,6 +10,7 @@ urlpatterns = [
     path("enrol/", views.enrol, name="enrol"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("courses/", views.courses, name="courses"),
+    path("students/", views.students, name="students"),
     path("profile/", views.profile, name="profile"),
     path("courses/details/<int:course_id>", views.courseDetails, name="courseDetails"),
     path("logout/", views.user_logout, name="logout"),
@@ -18,5 +19,7 @@ urlpatterns = [
     path("create_course/", views.create_course, name="create_course"),
     path("create_assignment/<int:course_id>", views.create_assignment, name="create_assignment"),
     path("join_course/<int:course_id>", views.join_course, name="join_course"),
+    path("delete_profile/", views.delete_profile, name="delete_profile"),
+    path("remove_enrolment/<int:course_id>/<int:student_id>", views.remove_enrolment, name="remove_enrolment"),
     # API URL patterns
 ]

@@ -51,14 +51,18 @@
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">
             <h2>My Courses</h2>
-            <div class="list-group" style="height: 80%;">
+            <div class="list-group" style="min-height: 65%;">
                {% for course in enrolled_courses %}
                <a href="/courses/details/{{course.id}}" class="list-group-item list-group-item-action" aria-current="true">
                   {{ course }}
                </a>
                {% endfor %}
             </div>
-            <a href="/courses"><button class="btn btn-outline-secondary"    type="button">View All</button></a>
+            {% if enrolled_courses %}
+            <a href="/courses"><button class="btn btn-outline-secondary" type="button">View All</button></a>
+            {% else %}
+            <a href="/courses"><button class="btn btn-outline-secondary" type="button">Find Courses</button></a>
+            {% endif %}
          </div>
          
       </div>

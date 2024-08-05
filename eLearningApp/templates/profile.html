@@ -3,8 +3,12 @@
 
 {% block main_content %}
 <div class="container py-4">
-   <header class="pb-3 mb-4 border-bottom">
+   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
       <span class="fs-4">My Profile</span>
+      <div>
+         <!-- Button trigger delete modal -->
+         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Delete Account</button>
+      </div>
    </header>
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
@@ -15,4 +19,34 @@
       </div>
    </div>
 </div>
+<!-- Delete details Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete Profile?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="statur_update" action="/delete_profile/" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+               <p>Are you sure you want to delete your profile?</p>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+<script>
+   var myModal = document.getElementById('myModal')
+   var myInput = document.getElementById('myInput')
+
+   myModal.addEventListener('shown.bs.modal', function () {
+      myInput.focus()
+   })
+</script>
 {% endblock main_content %}

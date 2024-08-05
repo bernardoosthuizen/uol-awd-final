@@ -62,7 +62,17 @@
          <h2 class="display-7">Enrolled Students</h2>
          <ul class="list-group list-group-flush">
             {% for student in course_students %}
-            <li class="list-group-item">{{student.first_name}} {{student.last_name}}</li>
+            <li class="list-group-item d-flex justify-content-between">{{student.first_name}} {{student.last_name}}
+               <button 
+               class="btn btn-outline-danger btn-sm" 
+               data-bs-toggle="modal" 
+               data-bs-target="#removeModal" 
+               data-student-id="{{student.id}}" 
+               data-student-name="{{student.first_name}} {{student.last_name}}"
+               data-course-id="{{course.id}}">
+                  Remove
+               </button>
+            </li>
             {% endfor %}
          </ul>
       </div>
@@ -119,13 +129,44 @@
    </div>
 </div>
 
-<script>
-   var myModal = document.getElementById('myModal')
-   var myInput = document.getElementById('myInput')
+<!-- Remove Student Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Remove Student?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="status_update" action="" method="post">
+            {% csrf_token %}
+            <div class="modal-body" id="remove-modal">
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-danger">Remove</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
 
-   myModal.addEventListener('shown.bs.modal', function () {
-      myInput.focus()
-   })
+<script>
+
+   document.addEventListener('DOMContentLoaded', function () {
+         var removeModal = document.getElementById('removeModal');
+         removeModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var studentId = button.getAttribute('data-student-id');
+            var studentName = button.getAttribute('data-student-name');
+            var courseId = button.getAttribute('data-course-id');
+
+            var removeModalBody = document.getElementById('remove-modal');
+            removeModalBody.innerHTML = '<p>Are you sure you want to remove <strong>' + studentName + '</strong> from the course?</p>';
+
+            var form = document.getElementById('status_update');
+            form.action = '/remove_enrolment/' + courseId +'/' + studentId ;
+         });
+      });
 </script>
 
 {% endblock main_content %}

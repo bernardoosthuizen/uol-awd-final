@@ -75,12 +75,12 @@
             <h5 class="modal-title" id="exampleModalLabel">New Course</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <form id="course_form" action="/create_course/" method="post">
+         <form id="course_form" action="/delete_profile/" method="post">
             {% csrf_token %}
             <div class="modal-body">
                <div class="form-floating my-md-3">
-                  <input name="name" type="text" class="form-control" id="floatingInput">
-                  <label for="floatingInput">Name</label>
+                  <input name="name" type="text" class="form-control" id="floatingInput" placeholder="Name" > 
+                  <label for="floatingInput" >Name</label>
                </div>
             </div>
             <div class="modal-footer">
@@ -124,12 +124,4 @@
       </div>
    </div>
 </div>
-<script>
-   var myModal = document.getElementById('myModal')
-   var myInput = document.getElementById('myInput')
-
-   myModal.addEventListener('shown.bs.modal', function () {
-      myInput.focus()
-   })
-</script>
 {% endblock main_content %}

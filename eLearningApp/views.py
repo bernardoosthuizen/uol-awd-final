@@ -116,17 +116,17 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     user_group = request.user.groups.first()
-    status_updates = StudentStatusUpdate.objects.filter(user=request.user).order_by('date')[:5]
+    status_updates = StudentStatusUpdate.objects.filter(user=request.user).order_by('-date')[:5]
     
     # find enrolled courses
     course_enrollments = CourseEnrollment.objects.filter(user=request.user)
     enrolled_courses = Course.objects.filter(id__in=course_enrollments.values('course_id'))[:5]
     
     # get deadlines
-    course_deadlines = CourseAssignment.objects.filter(course__in=enrolled_courses).order_by('deadline')
+    course_deadlines = CourseAssignment.objects.filter(course__in=enrolled_courses).order_by('-deadline')
     
     # get notifications
-    user_notifications = Notification.objects.filter( Q(receiving_user=request.user) | Q(for_course__in=enrolled_courses)).order_by('date')[:10]
+    user_notifications = Notification.objects.filter( Q(receiving_user=request.user) | Q(for_course__in=enrolled_courses)).order_by('-date')[:10]
     
     context = {
         "pageTitle": "Dashboard",
@@ -143,6 +143,7 @@ def dashboard(request):
 def courses(request):
     user_group = request.user.groups.first()
     # find enrolled courses
+    
     course_enrollments = CourseEnrollment.objects.filter(user=request.user)
     enrolled_courses = Course.objects.filter(id__in=course_enrollments.values('course_id'))
     
@@ -158,9 +159,26 @@ def courses(request):
     return render(request, "courses.html", context)
 
 @login_required
+def students(request):
+    institution = AppUser.objects.get(user=request.user).institution
+    students = AppUser.objects.filter(institution=institution)
+    student_details = User.objects.filter(id__in=students.values('user_id'))
+    user_group = request.user.groups.first()
+    
+    context = {
+        "pageTitle": "Students",
+        "students": student_details,
+        "institution": institution, 
+        "user_group": user_group,
+    }
+    return render(request, "students.html", context)
+
+@login_required
 def profile(request):
+    user_group = request.user.groups.first()
     context = {
         "pageTitle": "Profile",
+        "user_group": user_group,
     }
     return render(request, "profile.html", context)
 
@@ -180,7 +198,7 @@ def courseDetails(request, course_id):
     
     context = {
         "course": course,
-        "pageTitle": "Course Details: " + str(id),
+        "pageTitle": "Course Details: " + str(course),
         "user_group": user_group,
         "course_deadlines": course_deadlines,
         "course_materials": course_materials,
@@ -274,3 +292,19 @@ def join_course(request, course_id):
     Notification.objects.create(receiving_user=course.lecturer, message=request.user.first_name + " " + request.user.last_name + " has enrolled in " + course.name)
     
     return redirect('courses')
+
+@login_required
+def delete_profile(request):
+    user = request.user
+    user.delete()
+    return redirect('index')
+
+@login_required
+def remove_enrolment(request, course_id, student_id):
+    if request.method == "POST":
+        course = Course.objects.get(id=course_id)
+        student_user = User.objects.get(id=student_id)
+        enrollment = CourseEnrollment.objects.get(user=student_user, course=course)
+        enrollment.delete()
+        
+        return redirect('courses')
