@@ -14,7 +14,10 @@
    </header>
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
-         <textarea id="chat-log" cols="100" rows="20" class="form-control"></textarea><br>
+         <div id="chat-log" class="d-flex flex-column border border-dark rounded p-2" style="height: 50vh; overflow-y: scroll;">
+
+         </div>
+         <br>
          <div class="input-group mb-3">
             <input id="chat-message-input" type="text" class="form-control" placeholder="Your message ..." aria-label="Your message ..."
                aria-describedby="button-addon2">
@@ -31,7 +34,12 @@
 
    chatSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
-      document.querySelector('#chat-log').value += (data.sender + '-' + data.message + '\n');
+      if (data.sender === '{{user.first_name}}') {
+         document.querySelector('#chat-log').innerHTML += ('<div style="color: blue;"><strong>' + data.sender + '</strong> ' + ' - ' + data.message + '</div>');
+      } else {
+         document.querySelector('#chat-log').innerHTML += ('<div style="padding-left: 3%;">><strong>' + data.sender + '</strong> ' + ' - ' + data.message + '</div>');
+      }
+      document.querySelector('#chat-log').scrollTop = document.querySelector('#chat-log').scrollHeight;
    };
 
    chatSocket.onclose = function (e) {
@@ -49,7 +57,7 @@
       const messageInputDom = document.querySelector('#chat-message-input');
       const message = messageInputDom.value;
       chatSocket.send(JSON.stringify({
-         'sender': 'bob',
+         'sender': '{{user.first_name}}',
          'message': message
       }));
       messageInputDom.value = '';
