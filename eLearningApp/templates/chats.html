@@ -1,0 +1,53 @@
+<!-- --- COURSIFY: chats
+ Lists all chats that the student is in.  -->
+{% extends "components/dashboard_layout.html" %}
+{% load bootstrap5 %}
+
+{% block main_content %}
+<div class="container py-4">
+   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
+      <span class="fs-4">My Chats</span>
+   </header>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <div class="d-flex align-items-center p-2 my-2">
+            <form class="w-100">
+               <input type="search" class="form-control" placeholder="Search..." id="studentSearch" aria-label="Search">
+            </form>
+         </div>
+         <ul class="list-group list-group-flush px-2" id="studentList" style="max-height: 70vh; overflow: hidden;">
+            {% for chat in open_chats %}
+            {% if user_group.name == "Teacher"  %}
+            <li class="list-group-item d-flex justify-content-between"><strong>{{chat.student.first_name}} {{chat.student.last_name}}</strong>
+               <a href="../start_chat/{{chat.teacher.id}}/{{chat.student.id}}" class="btn btn-outline-primary btn-sm">
+               Start Chat
+               </a>
+            </li>
+            {% else %}
+            <li class="list-group-item d-flex justify-content-between"><strong>{{chat.teacher.first_name}} {{chat.teacher.last_name}}</strong>
+               <a href="../start_chat/{{chat.teacher.id}}/{{chat.student.id}}" class="btn btn-outline-primary btn-sm">
+                  Start Chat
+               </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+         </ul>
+      </div>
+   </div>
+</div>
+<script>
+   document.querySelector('#room-name-input').focus();
+   document.querySelector('#room-name-input').onkeyup = function (e) {
+      if (e.keyCode === 13) {  // enter, return
+         document.querySelector('#room-name-submit').click();
+      }
+   };
+
+   document.querySelector('#room-name-submit').onclick = function (e) {
+      var roomName = document.querySelector('#room-name-input').value;
+      window.location.pathname = '/chat/' + roomName;
+   };
+</script>
+
+
+{% endblock main_content %}

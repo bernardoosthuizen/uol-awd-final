@@ -130,3 +130,17 @@ class Notification(models.Model):
         if self.receiving_user is None and self.for_course is None:
             raise ValidationError("Notification must be for a user or a course.")
         super().save(*args, **kwargs)
+        
+# Chats model
+class Chat(models.Model):
+    id = models.AutoField(primary_key=True)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teacher')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='student')
+    
+    def __str__(self):
+        return self.teacher.username + "-" + self.student.username
+    
+    def save(self, *args, **kwargs):
+        if self.teacher == self.student:
+            raise ValidationError("Users must be different.")
+        super().save(*args, **kwargs)

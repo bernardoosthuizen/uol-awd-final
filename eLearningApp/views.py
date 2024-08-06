@@ -172,14 +172,43 @@ def students(request):
     students = AppUser.objects.filter(institution=institution)
     student_details = User.objects.filter(id__in=students.values('user_id'))
     user_group = request.user.groups.first()
+    teacher_id = request.user.id
     
     context = {
         "pageTitle": "Students",
         "students": student_details,
         "institution": institution, 
         "user_group": user_group,
+        "teacher_id": teacher_id,
     }
     return render(request, "students.html", context)
+
+@login_required
+def chats(request):
+    user_group = request.user.groups.first()
+    open_chats = Chat.objects.filter(Q(teacher=request.user) | Q(student=request.user))
+    context = {
+        "pageTitle": "Chats",
+        "user_group": user_group,
+        "open_chats": open_chats,
+    }
+    return render(request, "chats.html", context)
+
+@login_required
+def chatroom(request, chat_id):
+    user_group = request.user.groups.first()
+    teacher_id, student_id = chat_id.split('-')
+    teacher = User.objects.get(id=teacher_id)
+    student = User.objects.get(id=student_id)
+    
+    context = {
+        "pageTitle": "Chatroom",
+        "user_group": user_group,
+        "chat_id": chat_id,
+        "teacher": teacher,
+        "student": student,
+    }
+    return render(request, "chatroom.html", context)
 
 @login_required
 def profile(request):
@@ -317,3 +346,18 @@ def remove_enrolment(request, course_id, student_id):
         enrollment.delete()
         
         return redirect('courses')
+    
+@login_required
+def start_chat(request, teacher_id, student_id):
+    if request.method == "GET":
+        # Get student to chat with
+        student_user = User.objects.get(id=student_id)
+        teacher_user = User.objects.get(id=teacher_id)
+        chat = Chat.objects.filter(Q(teacher=teacher_user) & Q(student=student_user))
+        if chat:
+            return redirect('chatroom', str(teacher_user.id) + '-' + str(student_user.id))
+        else:
+            # create chat if it does not exist
+            chat = Chat.objects.create(teacher=teacher_user, student=student_user)
+        
+        return redirect('chatroom', str(teacher_user.id) + '-' + str(student_user.id))

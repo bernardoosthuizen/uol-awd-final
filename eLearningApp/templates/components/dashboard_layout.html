@@ -26,6 +26,11 @@
         </li>
         {% endif %}
         <li>
+            <a href="/chats" class="nav-link link-dark {% if request.path == '/chats/' %}active{% endif %}">
+                Chats
+            </a>
+        </li>
+        <li>
             <a href="/profile" class="nav-link link-dark {% if request.path == '/profile/' %}active{% endif %}">
                 My Profile
             </a>

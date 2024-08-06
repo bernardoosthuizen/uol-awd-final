@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-qd*s(d0wc_1g^nl2l4)13%(&l&r=*4igy_3hhb+(4rxzp09x4w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "bootstrap5",
     'rest_framework',
     'drf_yasg',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,16 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = "uolAwdFinal.wsgi.application"
+ASGI_APPLICATION = "uolAwdFinal.routing.application"
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

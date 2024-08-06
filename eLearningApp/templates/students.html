@@ -16,9 +16,14 @@
                <input type="search" class="form-control" placeholder="Search..." id="studentSearch" aria-label="Search">
             </form>
          </div>
-         <ul class="list-group list-group-flush px-2" id="studentList" style="max-height: 70vh; overflow: hidden;">
+         <ul class="list-group list-group-flush px-2 d-flex" id="studentList" style="max-height: 70vh; overflow: hidden;">
             {% for student in students %}
-            <li class="list-group-item"><strong>{{student.first_name}} {{student.last_name}}</strong> - {{student.email}}</li>
+            <li class="list-group-item d-flex justify-content-between"><div><strong>{{student.first_name}} {{student.last_name}}</strong> - {{student.email}}</div>
+               <a href="../start_chat/{{teacher_id}}/{{student.id}}" class="btn btn-outline-primary btn-sm">
+                  Start Chat
+               </a>
+         </li>
+            
             {% endfor %}
          </ul>
       </div>
