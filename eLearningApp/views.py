@@ -226,7 +226,7 @@ def courseDetails(request, course_id):
     course = Course.objects.get(id=course_id)
     
     course_deadlines = CourseAssignment.objects.filter(course=course)
-    course_materials = CourseMaterial.objects.filter(course=course)
+    course_materials = File.objects.filter(course=course)
     course_feedback = CourseFeedback.objects.filter(course=course)
     enrolled_students = CourseEnrollment.objects.filter(course=course)
     course_students = User.objects.filter(id__in=enrolled_students.values('user_id'))
@@ -359,5 +359,8 @@ def start_chat(request, teacher_id, student_id):
         else:
             # create chat if it does not exist
             chat = Chat.objects.create(teacher=teacher_user, student=student_user)
+            # notify student 
+            Notification.objects.create(receiving_user=student_user, message="You have been added to a chat with " + teacher_user.first_name + " " + teacher_user.last_name)
         
         return redirect('chatroom', str(teacher_user.id) + '-' + str(student_user.id))
+    

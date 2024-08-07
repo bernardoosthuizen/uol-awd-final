@@ -63,3 +63,10 @@ class CourseAssignmentSerializer(serializers.ModelSerializer):
         model = CourseAssignment
         fields = '__all__'
         
+        
+# File serializer
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = ['name', 'file', 'author', 'institution', 'uploaded_at', 'course']
+        

@@ -42,5 +42,5 @@ urlpatterns = [
     # API URL patterns
     path("api/users/", api.users, name='api_users'),
     path("api/user/<int:user_id>", api.user, name='api_user'),
-    # re_path(r"^api/user(?:/(?P<pk>\d+))?$", api.user, name='api_user'),
+    path("api/file/", api.file, name='api_file'),
 ]

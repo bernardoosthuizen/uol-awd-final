@@ -144,3 +144,16 @@ class Chat(models.Model):
         if self.teacher == self.student:
             raise ValidationError("Users must be different.")
         super().save(*args, **kwargs)
+        
+# Upladed Images model
+class File(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, db_index=True)
+    file = models.FileField(blank=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, null=False, blank=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    
+    def __str__(self):
+        return self.file.url

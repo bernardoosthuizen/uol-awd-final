@@ -32,6 +32,8 @@ class CourseAssignmentAdmin(admin.ModelAdmin):
 class ChatAdmin(admin.ModelAdmin):
     model = Chat
     
+class FileAdmin(admin.ModelAdmin):
+    model = File
     
     
     
@@ -45,4 +47,5 @@ admin.site.register(CourseEnrollment, CourseEnrollmentAdmin)
 admin.site.register(CourseMaterial, CourseMaterialAdmin)
 admin.site.register(CourseAssignment, CourseAssignmentAdmin)
 admin.site.register(Chat, ChatAdmin)
+admin.site.register(File, FileAdmin)
 

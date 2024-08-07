@@ -1,16 +1,20 @@
 # --- API Endpoints --
 # These are used to interact with user data.
 # Import necessary modules
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import generics, mixins
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import status
+import os
+import mimetypes
+import datetime
 from .models import *
 from .serializers import *
 
@@ -89,3 +93,38 @@ def users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET', 'POST', 'DELETE'])
+def file(request):
+    """
+    List all files.
+    ---
+    operationId: manageFiles
+    """
+
+    if request.method == 'POST':
+        data = request.data.copy()
+        data['author'] = request.user.id
+        data['institution'] = AppUser.objects.get(user=request.user).institution.id
+        
+        # Generate a new file name
+        original_file_name = data['file'].name
+        base_name, ext = os.path.splitext(original_file_name)
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        new_file_name = f"{data['name']}_file_{timestamp}{ext}"
+        data['file'].name = new_file_name
+        
+        # Perform different actions based on file type
+        if mime_type in ['image/jpeg', 'image/png']:
+            print("Image file")
+        elif mime_type == 'application/pdf':
+            print("PDF file")
+        
+        serializer = FileSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return redirect("../../courses/details/" + str(data['course']))
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
