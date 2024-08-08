@@ -115,15 +115,23 @@ def file(request):
         new_file_name = f"{data['name']}_file_{timestamp}{ext}"
         data['file'].name = new_file_name
         
+        mime_type = mimetypes.guess_type(data['file'].name)
+        
         # Perform different actions based on file type
         if mime_type in ['image/jpeg', 'image/png']:
             print("Image file")
         elif mime_type == 'application/pdf':
             print("PDF file")
+            
         
         serializer = FileSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            course_name = Course.objects.get(id=data['course']).name
+            Notification.objects.create(
+                for_course=data['course'],
+                message=f"New file uploaded to {course_name}."
+            )
             return redirect("../../courses/details/" + str(data['course']))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

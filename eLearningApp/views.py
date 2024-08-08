@@ -230,6 +230,7 @@ def courseDetails(request, course_id):
     course_feedback = CourseFeedback.objects.filter(course=course)
     enrolled_students = CourseEnrollment.objects.filter(course=course)
     course_students = User.objects.filter(id__in=enrolled_students.values('user_id'))
+    open_chats = Chat.objects.filter(Q(teacher=course.lecturer) | Q(student__in=course_students))[0:5]
 
     context = {
         "course": course,
@@ -239,6 +240,7 @@ def courseDetails(request, course_id):
         "course_materials": course_materials,
         "course_feedback": course_feedback, 
         "course_students": course_students,
+        "open_chats": open_chats,
         
     }
     return render(request, "course-details.html", context)
