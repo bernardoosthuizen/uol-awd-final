@@ -34,10 +34,9 @@
       </div>
    </div>
    {% endif %}
-   {% if user_group.name == "Student" %}
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
-         <h2 class="display-9">Status Updates</h2>
+         <h2 class="display-9">My Status Updates</h2>
          {% for status in status_updates %}
          <div class="card mb-3">
             <div class="card-body">
@@ -48,7 +47,6 @@
          {% endfor %}
       </div>
    </div>
-   {% endif %}
    <div class="row align-items-md-stretch">
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">

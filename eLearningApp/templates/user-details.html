@@ -1,0 +1,74 @@
+<!-- --- COURSIFY: user-details
+ This is visible to all users and displays a particular users details. -->
+ {% extends "components/dashboard_layout.html" %}
+{% load bootstrap5 %}
+
+{% block main_content %}
+<div class="container py-4">
+   <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
+      <span class="fs-4"><strong>{{user.first_name}} {{user.last_name}}</strong> - {{user_institution}}</span>
+      {% if user_group.name == "Teacher" %}
+      <div>
+         <!-- Button trigger modal -->
+          <a href="../start_chat/{{request_user.id}}/{{user.id}}" class="btn btn-secondary btn-sm">Start Chat</a>
+      </div>
+      {% endif %}
+   </header>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-7">Deadlines</h2>
+         <ul class="list-group list-group-flush">
+            {% for course in course_deadlines %}
+            <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
+            {% endfor %}
+         </ul>
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+         <h2 class="display-9">Status Updates</h2>
+         {% for status in status_updates %}
+         <div class="card mb-3">
+            <div class="card-body">
+               <p class="card-text lead">{{ status.status }}</p>
+               <p class="card-text"><small class="text-muted">{{ status.date }}</small></p>
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+   </div>
+   <div class="p-2 px-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-2">
+            <h2>Courses</h2>
+            <div class="list-group" style="min-height: 65%;">
+               {% for course in courses %}
+               <a href="/courses/details/{{course.id}}" class="list-group-item list-group-item-action" aria-current="true">
+                  {{ course }}
+               </a>
+               {% endfor %}
+            </div>
+      </div>
+   </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New Status Update</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form id="statur_update" action="/update_status/" method="post">
+         {% csrf_token %}
+         <div class="modal-body">
+            <textarea name="status_update"rows="2" maxlength="500" class="w-100" ></textarea>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Update</button>
+         </div>
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock main_content %}

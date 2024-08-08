@@ -1,0 +1,46 @@
+<!-- --- COURSIFY: timeline
+ This is visible to all users and displays a particular users details. -->
+{% extends "components/dashboard_layout.html" %}
+{% load bootstrap5 %}
+
+{% block main_content %}
+
+<div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
+        <span class="fs-4"><strong>{{institution}}'s Timeline</span>
+    </header>
+    <div class="p-2 px-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-2">
+            {% for status in status_updates %}
+            <div class="card mb-3 hover-card">
+                <div class="card-body">
+                    <a href="/user/{{status.user.id}}" class="text-decoration-none text-reset"data-bs-toggle="tooltip" title="View {{status.user.first_name}}">
+                        <p class="card-text lead">{{ status.status }}</p>
+                        <p class="card-text">
+                          {{ status.user.first_name }} {{ status.user.last_name }} <small class="text-muted"> - {{ status.date }}</small>
+                        </p>
+                    </a>
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<style>
+    .hover-card:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+<script>
+    // Initialize all tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl,{
+                    delay: { "show": 800, "hide": 100 }
+                })
+            })
+        });
+</script>
+{% endblock main_content %}

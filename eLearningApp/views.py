@@ -366,3 +366,52 @@ def start_chat(request, teacher_id, student_id):
         
         return redirect('chatroom', str(teacher_user.id) + '-' + str(student_user.id))
     
+    
+# Student details
+def user(request, user_id):
+    user = User.objects.get(id=user_id)
+    user_institution = AppUser.objects.get(user=user).institution
+    # get courses
+    user_courses = CourseEnrollment.objects.filter(user=user)
+    courses = Course.objects.filter(id__in=user_courses.values('course_id'))
+    # get deadlines
+    course_deadlines = CourseAssignment.objects.filter(course__in=courses).order_by('-deadline')
+    # Get status updates of the user
+    status_updates = StudentStatusUpdate.objects.filter(user=request.user).order_by('-date')[:5]
+    
+    # logged in user
+    request_user = request.user
+    
+    # Get user group
+    user_group = request.user.groups.first()
+    
+    context = {
+        "pageTitle": "User Details",
+        "user": user,
+        "courses": courses,
+        "course_deadlines": course_deadlines,
+        "status_updates": status_updates,
+        "user_institution": user_institution,
+        "user_group": user_group,
+        "request_user": request_user,
+    }
+    return render(request, "user-details.html", context)
+
+# Institution timeline
+def timeline(request):
+    # Get institution
+    institution = AppUser.objects.get(user=request.user).institution
+    # Get all status updates
+    status_updates = StudentStatusUpdate.objects.filter(user__appuser__institution=institution).order_by('-date')
+    
+    # Get user group
+    user_group = request.user.groups.first()
+    
+    context = {
+        "pageTitle": "Timeline",
+        "status_updates": status_updates,
+        "institution": institution.name,
+        "user_group": user_group,
+    }
+    return render(request, "timeline.html", context)
+    
