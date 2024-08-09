@@ -1,4 +1,4 @@
-<!-- --- COURSIFY: dashnoard
+<!-- --- COURSIFY: dashboard
  The user's dashboard with oversight about deadlines, courses and more  -->
  {% extends "components/dashboard_layout.html" %}
 {% load bootstrap5 %}
@@ -15,6 +15,9 @@
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
          <h2 class="display-7">Deadlines</h2>
+         {% if not course_deadlines %}
+         <p>No deadlines! You can breathe.</p>
+         {% endif %}
          <ul class="list-group list-group-flush">
             {% for course in course_deadlines %}
             <li class="list-group-item"><strong>{{course.deadline}}</strong> - {{course.course}}: {{course}}</li>
@@ -26,6 +29,9 @@
    <div class="p-2 px-5 mb-4 bg-light rounded-3">
       <div class="container-fluid py-2">
          <h2 class="display-7">Notifications</h2>
+         {% if not user_notifications %}
+         <p>Its all clear!</p>
+         {% endif %}
          <ul class="list-group list-group-flush">
             {% for notification in user_notifications %}
             <li class="list-group-item">{{notification}} - {{notification.date}}</li>
@@ -51,6 +57,9 @@
       <div class="col-md-6">
          <div class="h-100 p-5 bg-light border rounded-3">
             <h2>My Courses</h2>
+            {% if not enrolled_courses %}
+            <p>No enrollments.</p>
+            {% endif %}
             <div class="list-group" style="min-height: 65%;">
                {% for course in enrolled_courses %}
                <a href="/courses/details/{{course.id}}" class="list-group-item list-group-item-action" aria-current="true">

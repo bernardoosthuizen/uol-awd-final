@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 
 
 @shared_task
+# Reduces uploaded image size to a max width of 1000px
 def process_image(file_id):
     
     # Retrieve the file instance from the database
@@ -23,6 +24,7 @@ def process_image(file_id):
         with default_storage.open(file_path, 'rb') as file:
             image = img.open(file)
             
+            # Don't do anything if the image is already less than 1000px wide
             if image.width <= 1000:
                 return {"status": "success", "message": "Image is already less than 1000px wide"}
             

@@ -22,7 +22,6 @@ from .tasks import *
 
     
 @api_view(['GET', 'POST', 'DELETE'])
-
 def user(request, pk=None):
     """
     List all users.
@@ -107,6 +106,7 @@ def file(request):
 
     if request.method == 'POST':
         data = request.data.copy()
+        # add author and institution to data
         data['author'] = request.user.id
         data['institution'] = AppUser.objects.get(user=request.user).institution.id
         
@@ -138,9 +138,9 @@ def file(request):
                     message=f"New file uploaded to {course_instance.name}."
                 )
                 return redirect("../../courses/details/" + str(data['course']))
-            
+        
         elif mime_type == 'application/pdf':
-            
+            # PDF files are not processed
             serializer = FileSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
