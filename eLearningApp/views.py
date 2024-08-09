@@ -225,9 +225,9 @@ def courseDetails(request, course_id):
     
     course = Course.objects.get(id=course_id)
     
-    course_deadlines = CourseAssignment.objects.filter(course=course)
-    course_materials = File.objects.filter(course=course)
-    course_feedback = CourseFeedback.objects.filter(course=course)
+    course_deadlines = CourseAssignment.objects.filter(course=course).order_by('-deadline')
+    course_materials = File.objects.filter(course=course).order_by('-uploaded_at')
+    course_feedback = CourseFeedback.objects.filter(course=course).order_by('-date')
     enrolled_students = CourseEnrollment.objects.filter(course=course)
     course_students = User.objects.filter(id__in=enrolled_students.values('user_id'))
     open_chats = Chat.objects.filter(Q(teacher=course.lecturer) | Q(student__in=course_students))[0:5]

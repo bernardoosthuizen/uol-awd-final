@@ -11,12 +11,14 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.db import transaction
 from rest_framework import status
 import os
 import mimetypes
 import datetime
 from .models import *
 from .serializers import *
+from .tasks import *
 
     
 @api_view(['GET', 'POST', 'DELETE'])
@@ -115,24 +117,39 @@ def file(request):
         new_file_name = f"{data['name']}_file_{timestamp}{ext}"
         data['file'].name = new_file_name
         
-        mime_type = mimetypes.guess_type(data['file'].name)
+        mime_type, _ = mimetypes.guess_type(data['file'].name)
         
         # Perform different actions based on file type
         if mime_type in ['image/jpeg', 'image/png']:
-            print("Image file")
-        elif mime_type == 'application/pdf':
-            print("PDF file")
+            serializer = FileSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                # Extract the file_id from serializer.data
+                file_id = serializer.instance.id
+                
+                image = File.objects.get(id=file_id)
+                
+                # Register the task to be run after the transaction is committed with a 2-second delay
+                transaction.on_commit(lambda: process_image(file_id))
+                
+                course_instance= Course.objects.get(id=data['course'])
+                Notification.objects.create(
+                    for_course=course_instance,
+                    message=f"New file uploaded to {course_instance.name}."
+                )
+                return redirect("../../courses/details/" + str(data['course']))
             
-        
-        serializer = FileSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            course_name = Course.objects.get(id=data['course']).name
-            Notification.objects.create(
-                for_course=data['course'],
-                message=f"New file uploaded to {course_name}."
-            )
-            return redirect("../../courses/details/" + str(data['course']))
+        elif mime_type == 'application/pdf':
+            
+            serializer = FileSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                course_instance= Course.objects.get(id=data['course'])
+                Notification.objects.create(
+                    for_course=course_instance,
+                    message=f"New file uploaded to {course_instance.name}."
+                )
+                return redirect("../../courses/details/" + str(data['course']))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
