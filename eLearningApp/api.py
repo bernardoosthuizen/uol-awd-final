@@ -22,7 +22,7 @@ from .tasks import *
 
     
 @api_view(['GET', 'POST', 'DELETE'])
-def user(request, pk=None):
+def user(request, user_id=None):
     """
     List all users.
     ---
@@ -30,8 +30,8 @@ def user(request, pk=None):
     """
     
     if request.method == 'GET':
-        if pk is not None:
-            user_instance = get_object_or_404(User, pk=pk)
+        if user_id is not None:
+            user_instance = get_object_or_404(User, pk=user_id)
             serializer = UserSerializer(user_instance)
             return Response(serializer.data)
         else:
@@ -73,8 +73,8 @@ def user(request, pk=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        if pk is not None:
-            user = User.objects.get(pk=pk)
+        if user_id is not None:
+            user = User.objects.get(pk=user_id)
             app_user = AppUser.objects.get(user=user)
             app_user.delete()
             user.delete()

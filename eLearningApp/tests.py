@@ -35,8 +35,9 @@ class UserAPITests(APITestCase):
             'last_name': 'User',
             'institution': 'The Test Uni'
         }
-
-        response = self.client.post(reverse('api_user', kwargs={'pk': self.user_id}), data, format='json')
+        
+        url = reverse('api_user', kwargs={'user_id': self.user_id})
+        response = self.client.post(url, data, format='json')
         self.user_id = User.objects.get(username=response.data['email'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
@@ -44,7 +45,7 @@ class UserAPITests(APITestCase):
         """
         Ensure we can get a specific user object.
         """
-        response = self.client.get(reverse('api_user', kwargs={'pk': self.user_id}))
+        response = self.client.get(reverse('api_user', kwargs={'user_id': self.user_id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['email'], 'apitest@test.com')
         
@@ -60,5 +61,5 @@ class UserAPITests(APITestCase):
         """
         Ensure we can delete a specific user object.
         """
-        response = self.client.delete(reverse('api_user', kwargs={'pk': self.user_id}))
+        response = self.client.delete(reverse('api_user', kwargs={'user_id': self.user_id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
